@@ -4,7 +4,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.ListView;
 
-import onlineProgram.ItemProgramAdapter;
+import com.chenjinghao.onlinemediaplayer.onlineProgram.ItemProgramAdapter;
 
 public class MainActivity extends AppCompatActivity {
 
