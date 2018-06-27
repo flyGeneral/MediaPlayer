@@ -1,6 +1,7 @@
 package com.chenjinghao.onlinemediaplayer.onlineProgram;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,7 +39,7 @@ public class ItemProgramAdapter extends BaseAdapter{
     }
 
     @Override
-    public View getView(int pos, View convertView, ViewGroup viewGroup) {
+    public View getView(final int pos, View convertView, ViewGroup viewGroup) {
         VideoViewHolder viewHolder;
         if (convertView == null){
             convertView = LayoutInflater.from(mContext).inflate(R.layout.online_program_item, null);
@@ -51,7 +52,10 @@ public class ItemProgramAdapter extends BaseAdapter{
         viewHolder.mProgramTitle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                Intent intent = new Intent(mContext, LiveActivity.class);
+                intent.putExtra("url", mUrlList[pos]);
+                intent.putExtra("title", mDataList[pos]);
+                mContext.startActivity(intent);
             }
         });
         return convertView;
