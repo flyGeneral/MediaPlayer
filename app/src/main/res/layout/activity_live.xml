@@ -6,6 +6,11 @@
     android:layout_height="match_parent"
     tools:context="com.chenjinghao.onlinemediaplayer.onlineProgram.LiveActivity">
 
+    <io.vov.vitamio.widget.VideoView
+        android:id="@+id/vv_surface_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
     <RelativeLayout
         android:id="@+id/rl_loading_layout"
         android:layout_width="match_parent"
