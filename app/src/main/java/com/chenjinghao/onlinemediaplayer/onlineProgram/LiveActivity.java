@@ -3,13 +3,18 @@ package com.chenjinghao.onlinemediaplayer.onlineProgram;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.net.Uri;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.chenjinghao.onlinemediaplayer.R;
 
@@ -26,12 +31,18 @@ public class LiveActivity extends AppCompatActivity implements View.OnClickListe
     private int RETRY_TIMES = 5;
     private int mCounts = 0;
 
+    private RelativeLayout mRlActivityLive;
     private RelativeLayout mRlLoadingLayout;
+    private LinearLayout mTopPanel;
+    private LinearLayout mBottomPanel;
     private ImageView mBackButton;
     private TextView mProgramTitle;
     private ImageView mPlayButton;
     private VideoView mVideoView;
     private RelativeLayout mLoadingLayout;
+
+    private final int AUTO_CHANGE_INVISIBLE = 5000;
+    private Handler mHandler = new Handler(Looper.getMainLooper());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,10 +107,14 @@ public class LiveActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void initView() {
+        mRlActivityLive = findViewById(R.id.rl_activity_live);
         mBackButton = findViewById(R.id.iv_back);
         mProgramTitle = findViewById(R.id.tv_program_title);
         mPlayButton = findViewById(R.id.iv_play);
         mLoadingLayout = findViewById(R.id.rl_loading_layout);
+        mTopPanel = findViewById(R.id.ll_top_panel);
+        mBottomPanel = findViewById(R.id.ll_bottom_panel);
+        mRlActivityLive.setOnClickListener(this);
         mBackButton.setOnClickListener(this);
         mPlayButton.setOnClickListener(this);
     }
@@ -107,12 +122,49 @@ public class LiveActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View view) {
         switch (view.getId()){
+            case R.id.rl_activity_live:
+                if (mBottomPanel.getVisibility() == View.VISIBLE ||
+                        mTopPanel.getVisibility() == View.VISIBLE){
+                    mBottomPanel.setVisibility(View.GONE);
+                    mTopPanel.setVisibility(View.GONE);
+                    break;
+                }
+                mTopPanel.setVisibility(View.VISIBLE);
+                mBottomPanel.setVisibility(View.VISIBLE);
+                mHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mBottomPanel.setVisibility(View.GONE);
+                        mTopPanel.setVisibility(View.GONE);
+                    }
+                }, AUTO_CHANGE_INVISIBLE);
+                break;
             case R.id.iv_back:
                 finish();
                 break;
             case R.id.iv_play:
-
+                if (mVideoView.isPlaying()){
+                    mVideoView.stopPlayback();
+                    Toast.makeText(this, "stop play", Toast.LENGTH_SHORT).show();
+                } else {
+                    mVideoView.setVideoURI(Uri.parse(mUrl));
+                    mVideoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                        @Override
+                        public void onPrepared(MediaPlayer mp) {
+                            mVideoView.start();
+                            Toast.makeText(LiveActivity.this, "start play", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
                 break;
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (mVideoView != null){
+            mVideoView.stopPlayback();
         }
     }
 }
